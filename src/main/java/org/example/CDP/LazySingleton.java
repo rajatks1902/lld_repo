@@ -12,7 +12,7 @@ public class LazySingleton {
         if(lazySingleton==null)
             lazySingleton = new LazySingleton();
         else
-            System.out.println("Intance was Already Created");
+            System.out.println("Instance was Already Created");
         return lazySingleton;
     }
 }

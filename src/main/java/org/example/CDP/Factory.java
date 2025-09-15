@@ -44,6 +44,11 @@ class Train implements  Travel{
     }
 }
 
+
+/*
+ Factory Class responsible to create the instance based on the input
+ creates a full wrapper helping in easy creation of instance without much fuss
+ */
 class TravelManager{
 
     public static Travel checkDetails(String mode){
@@ -56,6 +61,10 @@ class TravelManager{
     }
 }
 
+
+/*
+Business Logic class where the instance of Travel is created and operation is done.
+ */
 class TravelHandler {
     public void send(String mode){
         Travel manager =  TravelManager.checkDetails(mode);
@@ -63,6 +72,8 @@ class TravelHandler {
         manager.way();
     }
 }
+
+
 public class Factory {
 
     public  static  void main(String args[]){
