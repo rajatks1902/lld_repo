@@ -2,9 +2,13 @@ package rks.dev.MultiThreadingPracticeQ;
 
 /*
 Create deadlock using:
-
+Part 1
 2 threads
 2 locks
+
+Part 2
+Avoid Deadlock
+
  */
 
 class Balance {
@@ -31,6 +35,11 @@ class UpdateBalance implements Runnable {
             this.b1 = b2;
             this.b2 = b1;
         }
+
+        /* this will create deadlock
+            this.b1 = b1;
+            this.b2 = b2;
+         */
     }
 
     @Override
