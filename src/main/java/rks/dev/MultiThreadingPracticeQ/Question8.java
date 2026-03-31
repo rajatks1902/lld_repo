@@ -1,58 +1,79 @@
 package rks.dev.MultiThreadingPracticeQ;
 
-/*
-Create deadlock using:
-Part 1
-2 threads
-2 locks
-
-Part 2
-Avoid Deadlock
-
- */
-
 class Balance {
 
-    int id;
-    int balance = 0;
+    public final int id;     // used for lock ordering
+    public int amount;       // actual balance (if needed)
 
     public Balance(int id) {
         this.id = id;
+        this.amount = 0;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void updateAmount(int delta) {
+        this.amount += delta;
     }
 }
 
-class UpdateBalance implements Runnable {
+class DeadlockTask implements Runnable {
 
-    final Balance b1;
-    final Balance b2;
+    private final Balance first;
+    private final Balance second;
 
-    public UpdateBalance(Balance b1, Balance b2) {
-        // this is help in DeadLock Avoidance
-        if (b1.id > b2.id) {
-            this.b1 = b1;
-            this.b2 = b2;
-        } else {
-            this.b1 = b2;
-            this.b2 = b1;
-        }
-
-        /* this will create deadlock
-            this.b1 = b1;
-            this.b2 = b2;
-         */
+    public DeadlockTask(Balance first, Balance second) {
+        this.first = first;
+        this.second = second;
     }
 
     @Override
     public void run() {
-        synchronized (b1) {
+        synchronized (first) {
+            System.out.println(Thread.currentThread().getName() + " locked " + first.id);
+
             try {
-                System.out.println("Thread Name" + Thread.currentThread().getName());
-                Thread.sleep(5000);
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
             }
-            synchronized (b2) {
-                System.out.println("Inside Question8");
+
+            synchronized (second) {
+                System.out.println("This will never print (deadlock)");
+            }
+        }
+    }
+}
+
+class SafeTask implements Runnable {
+
+    private final Balance first;
+    private final Balance second;
+
+    public SafeTask(Balance b1, Balance b2) {
+        // Enforce consistent lock ordering
+        if (b1.id < b2.id) {
+            this.first = b1;
+            this.second = b2;
+        } else {
+            this.first = b2;
+            this.second = b1;
+        }
+    }
+
+    @Override
+    public void run() {
+        synchronized (first) {
+            System.out.println(Thread.currentThread().getName() + " locked " + first.id);
+
+            synchronized (second) {
+                System.out.println(Thread.currentThread().getName() + " completed safely");
             }
         }
     }
@@ -60,19 +81,31 @@ class UpdateBalance implements Runnable {
 
 public class Question8 {
 
-
     public static void main(String[] args) throws InterruptedException {
-        Balance b1 = new Balance(1);
-        Balance b2 = new Balance(2);
 
-        Thread t1 = new Thread(new UpdateBalance(b1, b2));
-        Thread t2 = new Thread(new UpdateBalance(b2, b1));
+        Balance account1 = new Balance(1);
+        Balance account2 = new Balance(2);
+
+        // 🔴 Deadlock Scenario
+        Thread t1 = new Thread(new DeadlockTask(account1, account2), "T1");
+        Thread t2 = new Thread(new DeadlockTask(account2, account1), "T2");
 
         t1.start();
         t2.start();
-        t1.join();
-        t2.join();
 
-        System.out.println("Question8 Avoided");
+        Thread.sleep(3000);
+        System.out.println("Deadlock likely occurred\n");
+
+        // 🟢 Avoidance Scenario
+        Thread t3 = new Thread(new SafeTask(account1, account2), "T3");
+        Thread t4 = new Thread(new SafeTask(account2, account1), "T4");
+
+        t3.start();
+        t4.start();
+
+        t3.join();
+        t4.join();
+
+        System.out.println("Deadlock avoided");
     }
 }

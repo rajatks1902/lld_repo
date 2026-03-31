@@ -4,93 +4,69 @@ import java.util.List;
 import java.util.concurrent.*;
 
 /*
-3 tasks (10, 20, 30)
-One task may throw exception
-You must:
-Ignore failed tasks
-Sum only successful ones
-Program should NOT crash
- */
+Question 3: Handling Partial Failures
+
+Problem:
+- 3 tasks (10, 20, 30)
+- Some tasks may fail or timeout
+- Ignore failed tasks
+- Sum only successful results
+- Program should NOT crash
+
+Approach:
+✔ Use invokeAll with timeout
+✔ Handle cancellation + exceptions
+*/
+
 public class Question3 {
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-
-//        Solution1();
-
-        //Optimised Solution
-        Solution2();
-
+    public static void main(String[] args) throws InterruptedException {
+        solutionWithTimeout();
     }
 
-    private static void Solution2() throws InterruptedException, ExecutionException {
+    private static void solutionWithTimeout() throws InterruptedException {
 
-        List<Callable<Integer>> runner = List.of(callable(1), callable(1), callable(3));
-        ExecutorService exp = Executors.newFixedThreadPool(3);
-        List<Future<Integer>> futures =
-                exp.invokeAll(runner, 2, TimeUnit.SECONDS);
+        ExecutorService executor = Executors.newFixedThreadPool(3);
 
-        int ans = 0;
-        for (Future<Integer> f : futures) {
-            if (!f.isCancelled()) {
-                ans += f.get();
+        try {
+            List<Callable<Integer>> tasks = List.of(
+                    createTask(1),
+                    createTask(2),
+                    createTask(3)
+            );
+
+            List<Future<Integer>> futures =
+                    executor.invokeAll(tasks, 2, TimeUnit.SECONDS);
+            int sum = 0;
+            for (Future<Integer> future : futures) {
+                try {
+                    if (!future.isCancelled()) {
+                        sum += future.get();
+                    }
+                } catch (ExecutionException e) {
+                    // Ignore failed task
+                    System.out.println("Task failed: " + e.getCause());
+                }
             }
+
+            System.out.println("Partial Sum = " + sum);
+
+        } finally {
+            executor.shutdown();
         }
-
-        System.out.println("Partial Sum = " + ans);
-
-        exp.shutdown();
-
     }
 
-    public static Callable<Integer> callable(int n) throws InterruptedException {
-
+    // Helper method (clean + correct)
+    private static Callable<Integer> createTask(int n) {
         return () -> {
             Thread.sleep(n * 1000L);
+
+            // simulate failure
+            if (n == 2) {
+                throw new RuntimeException("Failure in task " + n);
+            }
+
             return n * 10;
         };
-
-    }
-
-    private static void Solution1() throws InterruptedException {
-
-        Callable<Integer> c1 = () -> {
-            Thread.sleep(5000);
-            return 50;
-        };
-        Callable<Integer> c2 = () -> {
-            Thread.sleep(2000);
-            return 20;
-        };
-        Callable<Integer> c3 = () -> {
-            Thread.sleep(1000);
-            return 10;
-        };
-        ExecutorService exp = Executors.newFixedThreadPool(3);
-        Future<Integer> f1 = exp.submit(c1);
-        Future<Integer> f2 = exp.submit(c2);
-        Future<Integer> f3 = exp.submit(c3);
-        Thread.sleep(2000);
-        exp.shutdownNow();
-        int a = 0, b = 0, c = 0;
-        try {
-            a = f1.get();
-        } catch (InterruptedException | ExecutionException e) {
-            System.out.println("f1 " + e);
-        }
-
-        try {
-            b = f2.get();
-        } catch (InterruptedException | ExecutionException e) {
-            System.out.println("f2 " + e);
-        }
-
-        try {
-            c = f3.get();
-        } catch (InterruptedException | ExecutionException e) {
-            System.out.println("f3 " + e);
-        }
-
-        System.out.println(a + b + c);
-
     }
 }

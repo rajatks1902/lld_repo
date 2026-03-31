@@ -3,73 +3,60 @@ package rks.dev.MultiThreadingPracticeQ;
 /*
 Question 1: Basic Thread + Runnable
 
-You create 2 threads using Runnable
-Each thread prints numbers from:
-Thread 1 → 1 to 5
-Thread 2 → 6 to 10
+Create 2 threads:
+Thread 1 → prints 1 to 5
+Thread 2 → prints 6 to 10
+
 Ensure:
-👉 Output is always in order (1 → 10)
+✔ Ordered output (1 → 10)
+✔ Use threads (no simple loop)
+✔ Avoid sleep()
 
-Constraints (important)
-You must use threads (no simple loop)
-You must ensure ordering
-Avoid using sleep() for ordering (bad practice)
+Approach 1:
+Use join() to enforce strict ordering
 
---> Solution1()
- */
+Approach 2:
+Run in parallel (ordering NOT guaranteed)
+*/
 
-/*
-To guarantee strict ordering, I used join().
-This sacrifices parallelism, but ensures correctness.
- If parallelism was required along with ordering,
- I would use synchronization mechanisms. -- > Solution2();
- */
 public class Question1 {
 
     public static void main(String[] args) throws InterruptedException {
-
-        solution1();
+        solutionWithOrdering();
         System.out.println();
-        solution2();
+        solutionWithoutOrdering();
     }
 
-    public static void solution1() throws InterruptedException {
-        Runnable r = () -> {
-            for (int i = 1; i <= 5; i++) {
-                System.out.print(i + " ");
-            }
-        };
-        Thread t = new Thread(r);
-        t.start();
-        t.join();
-        Runnable r1 = () -> {
-            for (int i = 6; i <= 10; i++) {
-                System.out.print(i + " ");
-            }
-        };
-        Thread t1 = new Thread(r1);
+    // ✔ Guarantees ordering using join()
+    public static void solutionWithOrdering() throws InterruptedException {
+        Thread t1 = new Thread(createTask(1, 5), "T1");
+        Thread t2 = new Thread(createTask(6, 10), "T2");
+
         t1.start();
-        t1.join();
+        t1.join(); // wait for t1 to finish
+
+        t2.start();
+        t2.join(); // wait for t2 to finish
     }
 
-    public static void solution2() throws InterruptedException {
-        Runnable r = () -> {
-            for (int i = 1; i <= 5; i++) {
-                System.out.print(i + " ");
-            }
-        };
-        Runnable r1 = () -> {
-            for (int i = 6; i <= 10; i++) {
-                System.out.print(i + " ");
-            }
-        };
-        Thread t = new Thread(r);
-        Thread t1 = new Thread(r1);
-        t.start();
+    // ❗ Runs in parallel (ordering NOT guaranteed)
+    public static void solutionWithoutOrdering() throws InterruptedException {
+        Thread t1 = new Thread(createTask(1, 5), "T1");
+        Thread t2 = new Thread(createTask(6, 10), "T2");
+
         t1.start();
-        t.join();
+        t2.start();
+
         t1.join();
+        t2.join();
     }
 
-
+    // Helper method to reduce duplication
+    private static Runnable createTask(int start, int end) {
+        return () -> {
+            for (int i = start; i <= end; i++) {
+                System.out.print(i + " ");
+            }
+        };
+    }
 }

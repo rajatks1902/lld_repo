@@ -1,65 +1,64 @@
 package rks.dev.MultiThreadingPracticeQ;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /*
-2 thread counting 1000 each
-Use ReentrantLock
-Use tryLock()
-If lock NOT acquired → skip increment
-Do NOT:
-use synchronized
-use AtomicInteger
- */
+Question 6: ReentrantLock with tryLock
+
+Problem:
+- 2 threads increment counter 1000 times each
+- Use tryLock()
+- If lock NOT acquired → skip increment
+
+Key Concept:
+✔ tryLock is non-blocking
+✔ Some increments may be skipped
+✔ Final count < 2000 (expected)
+*/
 
 class Counter {
 
-    ReentrantLock lock = new ReentrantLock();
+    private final ReentrantLock lock = new ReentrantLock();
+    private int count = 0;
 
-    private int cnt = 0;
-
-    public void increaseCount() {
-        boolean isLocked = false;
-        try {
-            isLocked = lock.tryLock(1, TimeUnit.NANOSECONDS);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            if (isLocked) {
-                cnt++;
-            }
-        } finally {
-            if (isLocked) {
+    public void increment() {
+        // Try to acquire lock (non-blocking)
+        if (lock.tryLock()) {
+            try {
+                count++;
+            } finally {
                 lock.unlock();
             }
         }
+        // else → skip increment
     }
 
     public int getCount() {
-        return cnt;
+        return count;
     }
 }
 
 public class Question6 {
 
     public static void main(String[] args) throws InterruptedException {
-        Counter cnt = new Counter();
 
-        Runnable r = () -> {
-            for (int i = 0; i < 1000; i++)
-                cnt.increaseCount();
+        Counter counter = new Counter();
+
+        Runnable task = () -> {
+            for (int i = 0; i < 1000; i++) {
+                counter.increment();
+            }
         };
-        Thread t = new Thread(r);
-        Thread t1 = new Thread(r);
-        t.start();
-        t1.start();
-        t.join();
-        t1.join();
-        System.out.println(cnt.getCount());
+
+        Thread thread1 = new Thread(task, "T1");
+        Thread thread2 = new Thread(task, "T2");
+
+        thread1.start();
+        thread2.start();
+
+        thread1.join();
+        thread2.join();
+
+        System.out.println("Final Count = " + counter.getCount());
     }
-
-
 }
-

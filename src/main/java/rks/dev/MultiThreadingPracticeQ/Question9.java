@@ -3,61 +3,85 @@ package rks.dev.MultiThreadingPracticeQ;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+/*
+Question 9: Producer-Consumer (Bounded Buffer)
+
+- Producer adds items
+- Consumer removes items
+- Buffer size limited to 5
+- Use wait/notify for coordination
+*/
+
 class Task {
 
     private final Queue<Integer> buffer = new ArrayDeque<>();
     private final int capacity = 5;
 
-    public synchronized void assignTask() throws InterruptedException {
+    // Producer
+    public synchronized void produce() throws InterruptedException {
         while (buffer.size() == capacity) {
             wait();
         }
+
         buffer.add(1);
-        System.out.println("Produced. Size: " + buffer.size());
+        int size = buffer.size(); // capture inside lock
+
         notifyAll();
+
+        System.out.println("Produced. Size: " + size);
     }
 
-    public void completeTask() throws InterruptedException {
-        int item;
+    // Consumer
+    public void consume() throws InterruptedException {
+        int sizeAfterRemove;
 
         synchronized (this) {
             while (buffer.isEmpty()) {
                 wait();
             }
-            item = buffer.remove();
+
+            buffer.remove();
+            sizeAfterRemove = buffer.size(); // capture inside lock
+
             notifyAll();
         }
 
-        // simulate work outside lock
-        System.out.println("Consumed. Size: " + buffer.size());
+        // simulate processing outside lock
+        System.out.println("Consumed. Size: " + sizeAfterRemove);
         Thread.sleep(1000);
     }
 }
 
 public class Question9 {
-    public static void main(String args[]) {
+
+    public static void main(String[] args) {
+
         Task task = new Task();
+
         Runnable producer = () -> {
-            while (true) {
-                try {
-                    task.assignTask();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    task.produce();
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         };
+
         Runnable consumer = () -> {
-            while (true) {
-                try {
-                    task.completeTask();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    task.consume();
                 }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         };
-        Thread t1 = new Thread(producer);
-        Thread t2 = new Thread(consumer);
-        t1.start();
-        t2.start();
+
+        Thread producerThread = new Thread(producer, "Producer");
+        Thread consumerThread = new Thread(consumer, "Consumer");
+
+        producerThread.start();
+        consumerThread.start();
     }
 }

@@ -1,60 +1,67 @@
 package rks.dev.MultiThreadingPracticeQ;
 
-/*
-You have a list of tasks (say 10 tasks), each returning an integer.
-
-👉 Requirement:
-
-Run all tasks in parallel
-As soon as each task completes, process its result immediately
-(i.e., don’t wait for all tasks like invokeAll)
-Print results in order of completion, NOT submission
-
-⚠️ Constraints
-Use ExecutorService
-Do NOT:
-use invokeAll()
-block on all futures at once
-Must process results as they complete
- */
-
 import java.util.List;
 import java.util.concurrent.*;
 
+/*
+Question 5: Process Tasks in Completion Order
+
+Problem:
+- 10 tasks
+- Execute in parallel
+- Process results as they complete
+- Print in completion order (NOT submission order)
+
+Approach:
+✔ Use ExecutorCompletionService
+✔ Use take() to block efficiently
+*/
+
 public class Question5 {
 
-    public static void main(String[] args) throws InterruptedException, ExecutionException {
-        List<Callable<Integer>> runner = List.of(callable(1), callable(2), callable(3), callable(4), callable(5), callable(6), callable(7), callable(8), callable(9), callable(10));
-        ExecutorService executor = Executors.newFixedThreadPool(10);
-        ExecutorCompletionService<Integer> exp =
-                new ExecutorCompletionService<>(executor);
-        for (Callable<Integer> r : runner) {
-            exp.submit(r);
-        }
+    public static void main(String[] args) throws InterruptedException {
 
-        int cnt = 0;
-        while (cnt != 10) {
-            Future<Integer> f = exp.poll(1, TimeUnit.SECONDS);
-            if (f != null && !f.isCancelled()) {
-                System.out.println(f.get());
-                cnt++;
+        ExecutorService executor = Executors.newFixedThreadPool(10);
+
+        try {
+            List<Callable<Integer>> tasks = List.of(
+                    createTask(1), createTask(2), createTask(3), createTask(4),
+                    createTask(5), createTask(6), createTask(7), createTask(8),
+                    createTask(9), createTask(10)
+            );
+
+            CompletionService<Integer> completionService =
+                    new ExecutorCompletionService<>(executor);
+
+            // Submit all tasks
+            for (Callable<Integer> task : tasks) {
+                completionService.submit(task);
             }
+
+            // Process results in completion order
+            for (int i = 0; i < tasks.size(); i++) {
+                try {
+                    Future<Integer> future = completionService.take(); // blocks
+                    System.out.println(future.get());
+                } catch (ExecutionException e) {
+                    System.out.println("Task failed: " + e.getCause());
+                }
+            }
+
+        } finally {
+            executor.shutdown();
         }
-//        for (int i = 0; i < 10; i++) {
-//    Future<Integer> f = exp.take();  // blocks until next completes
-//    System.out.println(f.get());
-//}
-        executor.shutdown();
     }
 
-    public static Callable<Integer> callable(int n) throws InterruptedException {
+    // Helper method
+    private static Callable<Integer> createTask(int n) {
         return () -> {
             if (n % 2 == 0)
                 Thread.sleep(n * 1000L);
             else
                 Thread.sleep(2 * n * 1000L);
+
             return n * 10;
         };
-
     }
 }
