@@ -45,7 +45,6 @@ public class StrategyPattern {
     public static void main(String[] args) {
         RiderMatchStrategy riderMatchStrategy = new RiderMatchStrategy(new Airport());
         riderMatchStrategy.matchRider();
-        ;
 
         riderMatchStrategy.setMatchingAlgo(new Nearest());
         riderMatchStrategy.matchRider();

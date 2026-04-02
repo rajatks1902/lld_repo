@@ -3,7 +3,7 @@ package rks.dev.LLD_SDP;
 
 /*
 Consider a BookMyShow  feature : booking + payment + seat allotment
--- > ideally we should take all input at once and build instance on the basis of tha
+-- > ideally we should take all input at once and build instance on the basis of that
 
  */
 
@@ -30,7 +30,7 @@ class SeatAllotment {
     }
 }
 
-// MoviebookingFacade Class
+// Movie bookingFacade Class
 //  Single Service Handing info from customer and redirecting as per the requirement
 class MovieBookingFacade {
 

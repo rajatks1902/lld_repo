@@ -10,21 +10,12 @@ Traversing through the elements without exposing the underlying operations
 import java.util.ArrayList;
 import java.util.List;
 
-class Video {
-    private String title;
-
-    public Video(String title) {
-        this.title = title;
-    }
-
-    public String getTitle() {
-        return this.title;
-    }
+record Video(String title) {
 }
 
 class YoutubeVideo {
 
-    private List<Video> videoList = new ArrayList<>();
+    private final List<Video> videoList = new ArrayList<>();
 
     public void addVideo(Video video) {
         videoList.add(video);
@@ -45,7 +36,7 @@ interface Playlist {
 
 class Iterator implements Playlist {
 
-    private List<Video> videos;
+    private final List<Video> videos;
     private int position;
 
     public Iterator(List<Video> videos) {
@@ -75,7 +66,7 @@ public class IteratorPattern {
 
         Playlist itr = new Iterator(yt.getVideoList());
         while (itr.hasNext()) {
-            System.out.println(itr.next().getTitle());
+            System.out.println(itr.next().title());
         }
 
     }

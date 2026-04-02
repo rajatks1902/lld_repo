@@ -62,7 +62,7 @@ public class BuilderClassOrder {
             return this;
         }
 
-        // Builds the instance of Main Class i.e BuilderClassOrder
+        // Builds the instance of Main Class i.e. BuilderClassOrder
         public BuilderClassOrder build() {
             return new BuilderClassOrder(this);
         }

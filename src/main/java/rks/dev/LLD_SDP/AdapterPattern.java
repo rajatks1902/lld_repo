@@ -37,7 +37,7 @@ Since in our business logic we create instance of paymentGateway and StripePayme
 
 class StripePaymentGateway implements PaymentGateway {
 
-    private StripePayment stripePayment;
+    private final StripePayment stripePayment;
 
     public StripePaymentGateway() {
         this.stripePayment = new StripePayment();
@@ -52,7 +52,7 @@ class StripePaymentGateway implements PaymentGateway {
 
 class CheckOutService {
 
-    private PaymentGateway paymentGateway;
+    private final PaymentGateway paymentGateway;
 
     public CheckOutService(PaymentGateway paymentGateway) {
         this.paymentGateway = paymentGateway;
