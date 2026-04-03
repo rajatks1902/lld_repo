@@ -67,5 +67,108 @@ Follow-up Questions:
 
 =========================================================
 */
+
+
+class Request {
+    String user;
+    String role;
+    boolean authenticated;
+
+    public Request(String user, String role, boolean authenticated) {
+        this.user = user;
+        this.role = role;
+        this.authenticated = authenticated;
+    }
+}
+
+/*
+-----------------------------------------------
+Abstract Handler
+-----------------------------------------------
+*/
+abstract class Handler {
+
+    protected Handler next;
+
+    public void setNext(Handler next) {
+        this.next = next;
+    }
+
+    public abstract void handle(Request request);
+}
+
+/*
+-----------------------------------------------
+Concrete Handlers
+-----------------------------------------------
+*/
+class AuthenticationHandlerQ7 extends Handler {
+
+    @Override
+    public void handle(Request request) {
+        if (!request.authenticated) {
+            System.out.println("Authentication Failed");
+            return; // stop chain
+        }
+
+        System.out.println("Authentication Passed");
+
+        if (next != null) {
+            next.handle(request);
+        }
+    }
+}
+
+class AuthorizationHandler extends Handler {
+
+    @Override
+    public void handle(Request request) {
+        if (!"ADMIN".equals(request.role)) {
+            System.out.println("Authorization Failed");
+            return; // stop chain
+        }
+
+        System.out.println("Authorization Passed");
+
+        if (next != null) {
+            next.handle(request);
+        }
+    }
+}
+
+class LoggingHandler extends Handler {
+
+    @Override
+    public void handle(Request request) {
+        System.out.println("Logging request for user: " + request.user);
+
+        if (next != null) {
+            next.handle(request);
+        }
+    }
+}
+
+/*
+-----------------------------------------------
+Client
+-----------------------------------------------
+*/
 public class Question7 {
+
+    public static void main(String[] args) {
+
+        // Build chain
+        Handler auth = new AuthenticationHandlerQ7();
+        Handler authorization = new AuthorizationHandler();
+        Handler logging = new LoggingHandler();
+
+        auth.setNext(authorization);
+        authorization.setNext(logging);
+
+        // Create request
+        Request request = new Request("Rajat", "ADMIN", true);
+
+        // Execute chain
+        auth.handle(request);
+    }
 }

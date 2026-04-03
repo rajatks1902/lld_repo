@@ -79,8 +79,8 @@ class ChainOfResponsibility {
         technical.setNextHandler(delivery);
 
         // Testing the chain of responsibility with different request types
-        general.handleRequest("refund");
-        general.handleRequest("delivery");
-        general.handleRequest("unknown");
+        general.handleRequest("general");
+//        general.handleRequest("delivery");
+//        general.handleRequest("unknown");
     }
 }
