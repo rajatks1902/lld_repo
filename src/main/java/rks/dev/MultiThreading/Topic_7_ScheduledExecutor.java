@@ -3,10 +3,9 @@ package rks.dev.MultiThreading;
 import java.io.IOException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-public class ScheduledExecutor {
+public class Topic_7_ScheduledExecutor {
 
     public static void main(String[] args) throws IOException {
 

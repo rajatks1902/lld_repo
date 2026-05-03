@@ -5,7 +5,6 @@ import java.util.UUID;
 
 public class BuilderClassOrder {
 
-
     private final UUID orderId;
 
     private final String userName;

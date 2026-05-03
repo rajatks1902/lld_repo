@@ -1,6 +1,6 @@
 package rks.dev.MultiThreading;
 
-class MainThreadR1 implements Runnable{
+class MainThreadR1 implements Runnable {
 
     @Override
     public void run() {
@@ -14,7 +14,7 @@ class MainThreadR1 implements Runnable{
     }
 }
 
-class MainThreadR2 implements Runnable{
+class MainThreadR2 implements Runnable {
 
     @Override
     public void run() {
@@ -28,13 +28,13 @@ class MainThreadR2 implements Runnable{
     }
 }
 
-public class ThreadImplements {
+public class Topic_2_ThreadImplements {
 
-    public static  void main (String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
 
         Thread thread1 = new Thread(new MainThreadR1());
         Thread thread2 = new Thread(new MainThreadR2());
-        Thread thread = new Thread(() ->{
+        Thread thread = new Thread(() -> {
             System.out.println("Functional Programming");
         });
         thread1.start();

@@ -1,9 +1,9 @@
 package rks.dev.MultiThreading;
 
-class MainThread1 extends Thread{
+class MainThread1 extends Thread {
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("Thread1 By Extending Started");
         try {
             Thread.sleep(3000);
@@ -14,10 +14,10 @@ class MainThread1 extends Thread{
     }
 }
 
-class MainThread2 extends Thread{
+class MainThread2 extends Thread {
 
     @Override
-    public void run(){
+    public void run() {
         System.out.println("Thread2 By Extending Started");
         try {
             Thread.sleep(10000);
@@ -28,9 +28,9 @@ class MainThread2 extends Thread{
     }
 }
 
-public class ThreadExtend {
+public class Topic_1_ThreadExtend {
 
-    public static  void main (String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException {
 
 
         MainThread1 thread1 = new MainThread1();

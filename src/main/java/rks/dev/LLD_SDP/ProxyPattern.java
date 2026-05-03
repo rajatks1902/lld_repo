@@ -18,8 +18,8 @@ class RealVideo implements Video {
 
 class CacheVideo implements Video {
 
-    private RealVideo realVideo;
-    private Map<String, String> cache;
+    private final RealVideo realVideo;
+    private final Map<String, String> cache;
 
     public CacheVideo() {
         this.realVideo = new RealVideo();

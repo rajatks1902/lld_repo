@@ -2,7 +2,7 @@ package rks.dev.MultiThreading;
 
 import java.util.concurrent.CompletableFuture;
 
-public class CompletableFutureMain {
+public class Topic_8_CompletableFutureMain {
 
     public static void main(String[] args) {
         CompletableFuture<String> f = CompletableFuture.supplyAsync(() -> {

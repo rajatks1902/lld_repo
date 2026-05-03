@@ -53,8 +53,8 @@ interface Channel {
 
 class YtChannel implements Channel {
 
-    private List<Subscriber> subscriberList = new ArrayList<>();
-    private String channelName;
+    private final List<Subscriber> subscriberList = new ArrayList<>();
+    private final String channelName;
 
     public YtChannel(String channelName) {
         this.channelName = channelName;

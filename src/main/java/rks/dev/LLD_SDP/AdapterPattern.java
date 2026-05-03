@@ -21,7 +21,7 @@ class UPIPayment implements PaymentGateway {
 class StripePayment {
 
     public void paymentAmount(double amt) {
-        System.out.println("Payement amt is AMT");
+        System.out.println("Payment amt is AMT");
     }
 
     public void paymentId(String id) {

@@ -4,7 +4,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
-class MainThreadC1 implements Callable<String>{
+class MainThreadC1 implements Callable<String> {
 
     @Override
     public String call() throws Exception {
@@ -14,15 +14,18 @@ class MainThreadC1 implements Callable<String>{
         return "ThreadFT1 Ends";
     }
 }
-public class ThreadByCallable {
 
-    public static void main(String [] args) throws ExecutionException, InterruptedException {
+public class Topic_3_ThreadByCallable {
+
+    public static void main(String[] args) throws ExecutionException, InterruptedException {
 
         FutureTask<String> ft1 = new FutureTask<>(new MainThreadC1());
-        FutureTask<String> ft = new FutureTask<>(() -> {Thread.sleep(1000);
+        FutureTask<String> ft = new FutureTask<>(() -> {
+            Thread.sleep(1000);
             System.out.println("MainThreadFT Started");
             Thread.sleep(3000);
-            return "ThreadFT Ends";});
+            return "ThreadFT Ends";
+        });
         Thread thread = new Thread(ft);
         Thread thread1 = new Thread(ft1);
         thread.start();

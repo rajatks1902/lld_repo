@@ -40,8 +40,8 @@ class Product implements CartItem {
 
 // ProductBundle class implementing CartItem
 class ProductBundle implements CartItem {
-    private String bundleName;
-    private List<CartItem> items = new ArrayList<>();
+    private final String bundleName;
+    private final List<CartItem> items = new ArrayList<>();
 
     public ProductBundle(String bundleName) {
         this.bundleName = bundleName;
